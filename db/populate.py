@@ -1,41 +1,31 @@
 import csv
+import os
 
-from data import session, Movie, Award, Join
+from data import createMovie, createAward, createJoin 
 
-def getData():
-    with open('./csv/academyawards.csv') as awardData:
-        reader = csv.reader(awardData, delimiter=',')
+cwd = os.path.dirname(os.path.realpath(__file__)) 
+
+def getData(csvPath, createDataWithLine):
+    with open(csvPath) as data:
+        reader = csv.reader(data, delimiter=',')
+
         line = 0
-
         for row in reader:
-            if line > 0 and line < 100:
+            if line > 100:
+                break
 
-                awardName = "Academy Award"
-                awardRank = row[4] == 'YES'
-                awardCategory = row[1].decode('utf-8', 'ignore').encode('utf-8')
-                movieName = row[3].decode('utf-8', 'ignore').encode('utf-8')
+            createDataWithLine(row)
+            line += 1
 
-                movie = Movie()
-                movie.name = movieName 
-                session.add(movie)
+def createAcademyAward(row): 
+    entity = "Oscar"
+    win = True 
+    name = row[1].decode('utf-8', 'ignore').encode('utf-8')
+    movie = row[2].decode('utf-8', 'ignore').encode('utf-8')
 
-                award = Award()
-                award.name = awardName
-                award.rank = awardRank
-                award.category = awardCategory
+    print "created academy award for " + movie 
 
-                session.add(award)
-                session.flush()
+    createJoin(createMovie(movie), createAward(entity, name, win))
 
-                join = Join()
-                join.award = award.id
-                join.movie = movie.id
-                session.add(join)
+getData(cwd + '/csv/academyawards.csv', createAcademyAward)
 
-                session.commit()
-
-            line += 1;
-
-        print("Created " + str(line) + " awards")
-
-getData()
