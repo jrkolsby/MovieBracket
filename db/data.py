@@ -52,52 +52,96 @@ metaData.create_all(engine)
 
 # returns ID
 def createMovie(name):
-    movie = Movie(name)
-    session.add(movie)
-    session.flush()
-    session.commit()
+    movie = findMovie(name) 
 
-    return movie.id
+    if movie is None:
+        movie = Movie(name)
+        session.add(movie)
+        session.flush()
+        session.commit()
+
+    return movie
 
 def createAward(entity, name, win):
-    award = Award(entity, name, win)
-    session.add(award)
-    session.flush()
-    session.commit()
+    
+    award = findAward(entity, name, win) 
 
-    return award.id 
+    if award is None:
+        award = Award(entity, name, win)
+        session.add(award)
+        session.flush()
+        session.commit()
+
+    return award
 
 def createJoin(movie, award):
-    join = Join(movie, award)
-    session.add(join)
-    session.flush()
-    session.commit()
 
-def findAward(entity, name, win):
-    query = session.query(Award)
+    join = findJoin(movie.id, award.id);
+
+    if join is None:
+        join = Join(movie.id, award.id)
+        session.add(join)
+        session.flush()
+        session.commit()
+
+    return join
+
+def findAward(entity=None, name=None, win=None):
+
+    entityFilter = nameFilter = winFilter = (True)
 
     if entity is not None:
-        entityFilter = Award.entity.like("%"+entity+"%");
-        query.filter(entityFilter)
+        entityFilter = (Award.entity.like("%"+entity+"%"))
 
     if name is not None:
-        nameFilter = Award.name.like("%"+name+"%");
-        query.filter(nameFilter)
+        nameFilter = (Award.name.like("%"+name+"%"))
 
     if win is not None:
         winFilter = (Award.win == win)
-        query.filter(winFilter)
 
-    return query.first()
+    return session.query(Award) \
+        .filter(entityFilter) \
+        .filter(nameFilter) \
+        .filter(winFilter).first()
 
-def findMovie(name):
-    query = session.query(Movie)
+def findMovie(name=None):
+
+    nameFilter = (True)
 
     if name is not None:
         nameFilter = Movie.name.like("%"+name+"%");
-        query.filter(nameFilter)
 
-    return query.first()
+    return session.query(Movie) \
+        .filter(nameFilter).first()
+
+def findJoin(movie=None, award=None):
+
+    movieFilter = awardFilter = (True)
+
+    if movieFilter is not None:
+        movieFilter = (Join.movie == movie)
+
+    if awardFilter is not None:
+        awardFilter = (Join.award == award)
+
+    return session.query(Movie) \
+        .filter(movieFilter) \
+        .filter(awardFilter).first()
+
+def getAwards(movieName):
+    movie = findMovie(name=movieName)
+
+    if movie is None:
+        return []
+
+    joins = session.query(Join) \
+        .filter(Join.movie == movie.id).all()
+
+    if joins is None:
+        return []
+
+    return list(map(lambda j: \
+        session.query(Award).get(j.award), joins))      
 
 def compareMovies(a, b):
     movieA = findMovie(name=a)

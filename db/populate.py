@@ -1,4 +1,4 @@
-import csv
+import unicodecsv
 import os
 
 from data import createMovie, createAward, createJoin 
@@ -6,8 +6,9 @@ from data import createMovie, createAward, createJoin
 cwd = os.path.dirname(os.path.realpath(__file__)) 
 
 def addData(csvPath, createDataWithLine):
-    with open(csvPath) as data:
-        reader = csv.reader(data, delimiter=',')
+    with open(csvPath, 'rb') as data:
+        reader = unicodecsv.reader(data, delimiter=',', \
+            encoding='ISO-8859-1')
 
         line = 0
         for row in reader:
@@ -16,16 +17,13 @@ def addData(csvPath, createDataWithLine):
             if line == 1:
                 continue;
 
-            if line > 100:
-                break;
-
             createDataWithLine(row)
 
 def createAcademyAward(row): 
     entity = "Oscar"
     win = row[2] == 'True'
-    name = row[1].decode('utf-8', 'ignore').encode('utf-8')
-    movie = row[3].decode('utf-8', 'ignore').encode('utf-8')
+    name = row[1]
+    movie = row[3]
 
     print "created academy award for " + movie 
 
@@ -34,11 +32,11 @@ def createAcademyAward(row):
 def createGoldenGlobe(row):
     entity = "Golden Globe"
     win = row[3] == 'yes'
-    name = row[1].decode('utf-8', 'ignore').encode('utf-8')
-    movie = row[2].decode('utf-8', 'ignore').encode('utf-8')
+    name = row[1]
+    movie = row[2]
 
     print "created academy award for " + movie 
-
+    
     createJoin(createMovie(movie), createAward(entity, name, win))
 
 addData(cwd + '/csv/academyawards.csv', createAcademyAward)
