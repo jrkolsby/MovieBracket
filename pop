@@ -1,3 +1,4 @@
 #/bin/bash
 
+rm ./db/awards.db
 python ./db/populate.py

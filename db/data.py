@@ -5,6 +5,7 @@ from sqlalchemy import Table, Column, ForeignKey
 from sqlalchemy import create_engine, MetaData, select
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
 
 cwd = os.path.dirname(os.path.realpath(__file__)) 
 
@@ -71,3 +72,37 @@ def createJoin(movie, award):
     session.add(join)
     session.flush()
     session.commit()
+
+def findAward(entity, name, win):
+    query = session.query(Award)
+
+    if entity is not None:
+        entityFilter = Award.entity.like("%"+entity+"%");
+        query.filter(entityFilter)
+
+    if name is not None:
+        nameFilter = Award.name.like("%"+name+"%");
+        query.filter(nameFilter)
+
+    if win is not None:
+        winFilter = (Award.win == win)
+        query.filter(winFilter)
+
+    return query.first()
+
+def findMovie(name):
+    query = session.query(Movie)
+
+    if name is not None:
+        nameFilter = Movie.name.like("%"+name+"%");
+        query.filter(nameFilter)
+
+    return query.first()
+
+def compareMovies(a, b):
+    movieA = findMovie(name=a)
+    movieB = findMovie(name=b)
+    print("a: " + movieA.name)
+    print("a: " + movieB.name)
+
+    return movieA
