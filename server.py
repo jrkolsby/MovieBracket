@@ -1,5 +1,4 @@
-import json
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask import render_template
 
 from db.data import createMovie, createAward, createJoin 
@@ -9,8 +8,21 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-
     return render_template('index.html')
+
+def success(payload): 
+    response = {
+        "type": "SUCCESS",
+        "payload": payload
+    }
+    return jsonify(response)
+
+def error(payload):
+    response = {
+        "type": "ERROR",
+        "payload": payload 
+    }
+    return jsonify(response)
 
 # CREATE
 @app.route("/db/add/")
@@ -18,18 +30,19 @@ def add():
     return "add"
 
 # READ
-@app.route("/db/compare/")
+@app.route("/db/compare/", methods=['GET', 'POST', 'DELETE'])
 def compare():
-    a = request.args.get('a')
-    b = request.args.get('b')
+    thisround = request.form.getlist('round[]')
 
-    result = compareMovies(a,b)
-    print(result)
+    if thisround == []:
+        return error("No round")
 
-    if result is None:
-        return "No results"
-    else:
-        return str(result.id)
+    if '' in thisround:
+        return error("Incomplete round")
+
+    results = [None] * (len(thisround)/2)
+
+    return success(results) 
 
 # UPDATE
 @app.route("/db/update")

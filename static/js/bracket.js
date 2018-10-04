@@ -1,22 +1,18 @@
-$(document).ready(function() {
-    let state = {
-        rounds: $(".round.input").length 
-    }
-    console.log(state.rounds)
-    $("input").keydown(function(e) {
-        switch(e.keyCode) {
-            case 13:
-                $.ajax({
-                    url: '/db/compare',
-                    type: 'POST',
-                    dataType: 'json',
-                    contentType: 'application/json',
-                    data: JSON.stringify(person)
-                });
-                break;
-            default:
-                break;
-        
+let preferences = ["Oscars", "Golden Globes"]
+
+let getResults = (round) => {
+
+    $.post('/db/compare/', {round, preferences})
+    .done((data) => {
+        console.log(data);
+    });
+}
+
+$(document).ready(() => {
+    $("input").keydown((e) => {
+        if (e.keyCode == 13) {
+            let round = $("input").toArray().map(i => i.value);
+            getResults(round)
         }
     });
 });

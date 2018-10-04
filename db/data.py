@@ -144,9 +144,10 @@ def getAwards(movieName):
         session.query(Award).get(j.award), joins))      
 
 def compareMovies(a, b):
-    movieA = findMovie(name=a)
-    movieB = findMovie(name=b)
-    print("a: " + movieA.name)
-    print("a: " + movieB.name)
+    awardsA = getAwards(a)
+    awardsB = getAwards(b)
 
-    return movieA
+    if len(awardsA) > len(awardsB):
+        return "a"
+    else:
+        return "b"
