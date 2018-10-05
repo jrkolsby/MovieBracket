@@ -1,0 +1,21 @@
+{% for movie in movies %}
+{% if loop.index is not divisibleby 2 %}
+    <div class="match {{ edges[((loop.index-1)/2)|int] }}">
+{% endif %}
+    <h4 class="{{'win' if movie.win else ''}}">{{ movie.name }}</h4>
+    <div class="awards {{'win' if movie.win else ''}}">
+{% for award in movie.awards %}
+    {% if award.entity == "Oscar" %}
+        <span class="oscar" title="{{ award.name }}"></span>
+    {% endif %}
+    {% if award.entity == "Golden Globe" %}
+        <span class="globe" title="{{ award.name }}"></span>
+    {% endif %} 
+{% endfor %}
+    </div>
+{% if loop.index is not divisibleby 2 %}
+    <hr /> 
+{% else %}
+    </div>
+{% endif %}
+{% endfor %}

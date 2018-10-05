@@ -5,10 +5,6 @@ from db.data import Award, getAwards
 
 app = Flask(__name__)
 
-@app.route("/")
-def index():
-    return render_template('index.html')
-
 def success(payload): 
     response = {
         "type": "SUCCESS",
@@ -23,32 +19,67 @@ def error(payload):
     }
     return jsonify(response)
 
+@app.route("/")
+def index():
+    return render_template('index.html')
+
 # CREATE
 @app.route("/db/add/")
 def add():
     return "add"
 
-# READ
-@app.route("/db/compare/", methods=['GET', 'POST', 'DELETE'])
-def compare():
-    thisround = request.form.getlist('round[]')
+def compare(a, b):
 
-    if thisround == []:
+    if len(a["awards"]) > len(b["awards"]):
+        a["win"] = True
+        b["win"] = False
+        return a.copy()
+
+    a["win"] = False
+    b["win"] = True
+    return b.copy()
+
+
+# READ
+@app.route("/results/", methods=['GET', 'POST', 'DELETE'])
+def getResults():
+    thisRound = request.form.getlist('round[]')
+    thisSize = len(thisRound) / 2
+
+    if thisRound == []:
         return error("No round")
 
-    if '' in thisround:
+    if '' in thisRound:
         return error("Incomplete round")
 
-    results = list(map(lambda m: { \
+    inputs = list(map(lambda m: { \
             "name": m,  
             "awards": list(map(lambda a: { \
                     "entity": a.entity,
                     "name": a.name,
                     "win": a.win
                 }, getAwards(m)))
-        }, thisround))
+        }, thisRound))
 
-    return success(results) 
+    results = []
+
+    for i in range(0, len(inputs), 2):
+        results.append(compare(inputs[i], inputs[i+1])) #Mutates!!
+
+    inputEdges = []
+
+    if thisSize is 4:
+        inputEdges = ["down right", "up right", "down right", "up right"]
+        results.append(compare(results[0], results[1]))
+        results.append(compare(results[2], results[3]))
+        results.append(compare(results[4], results[5]))
+        
+    print list(map(lambda m: m['name'], results))
+
+    return success({
+        "input": render_template('input.html', movies=inputs, edges=inputEdges),
+        "results": render_template('results.html', size=thisSize, bracket=results) 
+    });
 
 # UPDATE
 @app.route("/db/update")

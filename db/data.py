@@ -142,12 +142,3 @@ def getAwards(movieName):
 
     return list(map(lambda j: \
         session.query(Award).get(j.award), joins))      
-
-def compareMovies(a, b):
-    awardsA = getAwards(a)
-    awardsB = getAwards(b)
-
-    if len(awardsA) > len(awardsB):
-        return "a"
-    else:
-        return "b"

@@ -12,13 +12,16 @@ header {
     width: 100%;
     background: #FFD961;
     margin-bottom: 64px;
+    padding: 16px 0;
 }
 
 h1 {
     font-family: 'Montserrat', 'Roboto', 'Helvetica Neue', sans-serif;
     font-weight: 700;
+    font-size: 28px;
     font-style: italic;
     width: 100%;
+    text-align: center;
 }
 
 main {
@@ -112,19 +115,28 @@ main {
     font-family: Roboto;
     font-weight: 500;
     font-size: 14px;
-    color: #414141;
     display: block;
     margin: 0;
     width: 100%;
 }
 
-.match h4 { padding: 5px 16px; }
+.match h4 { 
+    padding: 5px 16px; 
+    color: #D5D5D5;
+}
 
-.match input { padding: 16px; }
+.match h4.win { color: #6FABFB; }
+.match h4.victor { color: #FECB2C; }
+
+.match input { 
+    padding: 16px; 
+    color: #414141;
+}
 
 .match .awards { 
     padding: 0 16px; 
     min-height: 16px;
+    overflow: hidden;
 }
 
 .match hr { 
@@ -142,7 +154,17 @@ main {
     height: 12px;
     width: 12px;
     display: inline-block;
+    margin-right: -5px;
+    background-color: #D5D5D5;
 }
 
-span.cannes { background: url('../img/cannes.svg'); }
-span.globes { background }
+.awards.win span {
+    background-color: #6fabfb;
+}
+
+.awards.victor span {
+    background-color: #FECB2C;
+}
+
+span.oscar { mask-image: url('../img/oscars.svg'); -webkit-mask-image: url('../img/oscars.svg'); }
+span.globe { mask-image: url('../img/globe.svg'); -webkit-mask-image: url('../img/globe.svg'); }
