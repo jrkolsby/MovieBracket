@@ -26,11 +26,13 @@ main {
 }
 
 .wrapper.wide {
-    max-width: 576px;
+    max-width: 588px;
+    padding: 0 8px;
 }
 
 .wrapper.narrow {
-    max-width: 512px;
+    max-width: 528px;
+    padding: 0 8px;
     text-align: left;
 }
 
@@ -120,7 +122,10 @@ main {
 
 .match input { padding: 16px; }
 
-.match .awards { padding: 0 16px; }
+.match .awards { 
+    padding: 0 16px; 
+    min-height: 16px;
+}
 
 .match hr { 
     border-color: #ECECEC; 

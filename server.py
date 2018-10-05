@@ -1,8 +1,7 @@
 from flask import Flask, request, jsonify
 from flask import render_template
 
-from db.data import createMovie, createAward, createJoin 
-from db.data import compareMovies
+from db.data import Award, getAwards
 
 app = Flask(__name__)
 
@@ -40,7 +39,14 @@ def compare():
     if '' in thisround:
         return error("Incomplete round")
 
-    results = [None] * (len(thisround)/2)
+    results = list(map(lambda m: { \
+            "name": m,  
+            "awards": list(map(lambda a: { \
+                    "entity": a.entity,
+                    "name": a.name,
+                    "win": a.win
+                }, getAwards(m)))
+        }, thisround))
 
     return success(results) 
 
