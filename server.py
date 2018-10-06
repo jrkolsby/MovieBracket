@@ -1,7 +1,12 @@
+import math
+import pprint
+
 from flask import Flask, request, jsonify
 from flask import render_template
 
 from db.data import Award, getAwards
+
+pp = pprint.PrettyPrinter(indent=4)
 
 app = Flask(__name__)
 
@@ -19,6 +24,25 @@ def error(payload):
     }
     return jsonify(response)
 
+class Match():
+    def __init__(self, titleA, titleB):
+        self.exists = True
+
+        self.titleA = titleA
+        self.titleB = titleB
+        self.awardsA = getAwards(titleA)
+        self.awardsB = getAwards(titleB)
+
+        self.win = False # True :: A wins
+
+    def winner(self):
+        if len(self.awardsA) > len(self.awardsB):
+            self.win = True
+            return self.titleA
+        else:
+            self.win = False
+            return self.titleB
+        
 @app.route("/")
 def index():
     return render_template('index.html')
@@ -28,58 +52,55 @@ def index():
 def add():
     return "add"
 
-def compare(a, b):
-
-    if len(a["awards"]) > len(b["awards"]):
-        a["win"] = True
-        b["win"] = False
-        return a.copy()
-
-    a["win"] = False
-    b["win"] = True
-    return b.copy()
-
-
 # READ
 @app.route("/results/", methods=['GET', 'POST', 'DELETE'])
 def getResults():
     thisRound = request.form.getlist('round[]')
-    thisSize = len(thisRound) / 2
 
     if thisRound == []:
         return error("No round")
 
     if '' in thisRound:
-        return error("Incomplete round")
+        return error("Incomplete round") 
 
-    inputs = list(map(lambda m: { \
-            "name": m,  
-            "awards": list(map(lambda a: { \
-                    "entity": a.entity,
-                    "name": a.name,
-                    "win": a.win
-                }, getAwards(m)))
-        }, thisRound))
+    inputs = []
 
-    results = []
+    for i in range(0, len(thisRound), 2):
+        inputs.append(Match(thisRound[i], thisRound[i+1]))
 
-    for i in range(0, len(inputs), 2):
-        results.append(compare(inputs[i], inputs[i+1])) #Mutates!!
+    inputSize = len(inputs)
 
-    inputEdges = []
+    bracketWidth = int(pow(2, math.ceil(math.log(inputSize,2))))
+    bracketSize = bracketWidth * 2 # - 1
 
-    if thisSize is 4:
-        inputEdges = ["down right", "up right", "down right", "up right"]
-        results.append(compare(results[0], results[1]))
-        results.append(compare(results[2], results[3]))
-        results.append(compare(results[4], results[5]))
-        
-    print list(map(lambda m: m['name'], results))
+    bracket = [None] * bracketSize
 
+    for i in range(inputSize):
+        bracket[bracketSize-1-i] = inputs[i]
+
+    for i in range(bracketSize-2, 1, -2):
+        print i
+        match = bracket[i]
+        sibling = bracket[i+1]
+
+        if (match is not None and sibling is not None):
+            bracket[i/2] = Match(match.winner(), sibling.winner()) 
+
+        if (match is None and sibling is not None):
+            fake = Match(sibling.titleA, sibling.titleB)
+            fake.exists = False
+            bracket[i/2] = fake
+
+    pp.pprint(list(map(lambda m: (m.titleA + ' vs ' + m.titleB) if (m is not None and m.exists) else '', bracket)))
+
+    return error(bracketSize)
+    
+    '''
     return success({
         "input": render_template('input.html', movies=inputs, edges=inputEdges),
         "results": render_template('results.html', size=thisSize, bracket=results) 
     });
+    '''
 
 # UPDATE
 @app.route("/db/update")
