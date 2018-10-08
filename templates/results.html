@@ -1,77 +1,26 @@
-{% if size == 4 %} 
-    <div class="match first down">
-        <h4 class="{{'win' if bracket[0].win else ''}}">{{ bracket[0].name }}</h4>
-        <div class="awards {{'win' if bracket[0].win else ''}}">
-        {% for award in bracket[0].awards %}
-            {% if award.entity == "Oscar" %}
-                <span class="oscar" title="{{ award.name }}"></span>
-            {% endif %}
-            {% if award.entity == "Golden Globe" %}
-                <span class="globe" title="{{ award.name }}"></span>
-            {% endif %} 
-        {% endfor %}
-        </div>
-        <hr />
-        <h4 class="{{'win' if bracket[1].win else ''}}">{{ bracket[1].name }}</h4>
-        <div class="awards {{'win' if bracket[1].win else ''}}">
-        {% for award in bracket[1].awards %}
-            {% if award.entity == "Oscar" %}
-                <span class="oscar" title="{{ award.name }}"></span>
-            {% endif %}
-            {% if award.entity == "Golden Globe" %}
-                <span class="globe" title="{{ award.name }}"></span>
-            {% endif %} 
-        {% endfor %}
-        </div>
+{% macro movie(title, awards, win)%}
+    <h4 class="{{'win' if win else ''}}"> {{ title }}</h4>
+    <div class="awards {{'win' if win else ''}}">
+    {% for award in awards %}
+        {% if award.entity == "Oscar" %}
+            <span class="oscar" title="{{ award.name }}"></span>
+        {% endif %}
+        {% if award.entity == "Golden Globe" %}
+            <span class="globe" title="{{ award.name }}"></span>
+        {% endif %} 
+    {% endfor %}
     </div>
-    <div class="match second">
-        <h4 class="{{'victor' if bracket[4].win else ''}}">{{ bracket[4].name }}</h4>
-        <div class="awards {{'victor' if bracket[4].win else ''}}">
-        {% for award in bracket[4].awards %}
-            {% if award.entity == "Oscar" %}
-                <span class="oscar" title="{{ award.name }}"></span>
-            {% endif %}
-            {% if award.entity == "Golden Globe" %}
-                <span class="globe" title="{{ award.name }}"></span>
-            {% endif %} 
-        {% endfor %}
-        </div>
+{% endmacro %}
+
+{% macro match(movieA, awardsA, movieB, awardsB, win, depth, edge) %}
+    <div class="match d{{ depth }} {{ edge }}">
+        {{ movie(movieA, awardsA, win) }}
         <hr />
-        <h4 class="{{'victor' if bracket[5].win else ''}}">{{ bracket[5].name }}</h4>
-        <div class="awards {{'victor' if bracket[5].win else ''}}">
-        {% for award in bracket[5].awards %}
-            {% if award.entity == "Oscar" %}
-                <span class="oscar" title="{{ award.name }}"></span>
-            {% endif %}
-            {% if award.entity == "Golden Globe" %}
-                <span class="globe" title="{{ award.name }}"></span>
-            {% endif %} 
-        {% endfor %}
-        </div>
+        {{ movie(movieB, awardsB, (win == False)) }}
     </div>
-    <div class="match first up">
-        <h4 class="{{'win' if bracket[2].win else ''}}">{{ bracket[2].name }}</h4>
-        <div class="awards {{'win' if bracket[2].win else ''}}">
-        {% for award in bracket[2].awards %}
-            {% if award.entity == "Oscar" %}
-                <span class="oscar" title="{{ award.name }}"></span>
-            {% endif %}
-            {% if award.entity == "Golden Globe" %}
-                <span class="globe" title="{{ award.name }}"></span>
-            {% endif %} 
-        {% endfor %}
-        </div>
-        <hr />
-        <h4 class="{{'win' if bracket[3].win else ''}}">{{ bracket[3].name }}</h4>
-        <div class="awards {{'win' if bracket[3].win else ''}}">
-        {% for award in bracket[3].awards %}
-            {% if award.entity == "Oscar" %}
-                <span class="oscar" title="{{ award.name }}"></span>
-            {% endif %}
-            {% if award.entity == "Golden Globe" %}
-                <span class="globe" title="{{ award.name }}"></span>
-            {% endif %} 
-        {% endfor %}
-        </div>
-    </div>
-{% endif %}
+{% endmacro %}
+
+{% for m in matches %}
+    {{ match(m.titleA, m.awardsA, m.titleB, m.awardsB, m.win, m.depth, "") }}
+{% endfor%}
+

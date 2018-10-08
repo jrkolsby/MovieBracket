@@ -100,11 +100,11 @@ main {
 .match.up.right.med::after { content: url('../img/up-right-med.svg'); }
 .match.up.right.long::after { content: url('../img/up-right-long.svg'); }
 
-.match.first { margin-left: 0; }
+.match.1 { margin-left: 0; }
 
-.match.second { margin-left: 64px; }
+.match.d2 { margin-left: 64px; }
 
-.match.third { margin-left: 128px; }
+.match.d3 { margin-left: 128px; }
 
 /* match CONTENTS */
 
