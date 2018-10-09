@@ -3,17 +3,19 @@
     <div class="awards {{'win' if win else ''}}">
     {% for award in awards %}
         {% if award.entity == "Oscar" %}
-            <span class="oscar" title="{{ award.name }}"></span>
+            <span class="oscar hint--bottom" aria-label="{{ award.name }}"></span>
         {% endif %}
         {% if award.entity == "Golden Globe" %}
-            <span class="globe" title="{{ award.name }}"></span>
+            <span class="globe hint--bottom" aria-label="{{ award.name }}"></span>
         {% endif %} 
     {% endfor %}
     </div>
 {% endmacro %}
 
-{% macro match(movieA, awardsA, movieB, awardsB, win, depth, edge) %}
-    <div class="match d{{ depth }} {% for e in edge %}{{ e }}{% endfor %}">
+{% macro match(movieA, awardsA, movieB, awardsB, win, final, depth, edge) %}
+    <div class="match d{{ depth }} 
+        {% for e in edge %}{{ e }}{% endfor %} 
+        {{'final' if final else ''}}">
         {{ movie(movieA, awardsA, win) }}
         <hr />
         {{ movie(movieB, awardsB, (win == False)) }}
@@ -21,6 +23,6 @@
 {% endmacro %}
 
 {% for m in matches %}
-    {{ match(m.titleA, m.awardsA, m.titleB, m.awardsB, m.win, m.depth, m.edge) }}
+    {{ match(m.titleA, m.awardsA, m.titleB, m.awardsB, m.win, m.final, m.depth, m.edge) }}
 {% endfor%}
 

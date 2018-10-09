@@ -41,6 +41,8 @@ class Match():
         self.awardsB = getAwards(titleB)
 
         self.win = False # True :: A wins
+        self.final = False
+
         self.depth = depth
 
     def winner(self):
@@ -136,6 +138,7 @@ def getResults():
 
     bracket = makeBracket(inputs)
     final = bracket[1]
+    final.final = True
     victor = final.winner()
 
     bracket = layout(bracket)
@@ -143,10 +146,9 @@ def getResults():
     edges = edge.get(len(inputs))
     i = 0
     for m in chain(inputs, bracket):
-        if m is final:
-            continue;
-        m.edge = edges[i]
-        i += 1
+        if m is not final:
+            m.edge = edges[i]
+            i += 1
 
     return success({
         "input": render_template('results.html', matches=inputs),

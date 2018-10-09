@@ -6,17 +6,18 @@ html, body {
 
 body {
     font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+    background: #4424C7;
 }
 
 header {
     width: 100%;
-    background: #FFD961;
     margin-bottom: 64px;
     padding: 16px 0;
 }
 
 h1 {
     font-family: 'Montserrat', 'Roboto', 'Helvetica Neue', sans-serif;
+    color: #fff;
     font-weight: 700;
     font-size: 28px;
     font-style: italic;
@@ -126,7 +127,7 @@ main {
 }
 
 .match h4.win { color: #6FABFB; }
-.match h4.victor { color: #FECB2C; }
+.match.final h4.win { color: #FECB2C; }
 
 .match input { 
     padding: 16px; 
@@ -154,7 +155,6 @@ main {
     height: 12px;
     width: 12px;
     display: inline-block;
-    margin-right: -5px;
     background-color: #D5D5D5;
 }
 
@@ -162,9 +162,13 @@ main {
     background-color: #6fabfb;
 }
 
-.awards.victor span {
+.match.final .awards.win span {
     background-color: #FECB2C;
 }
 
-span.oscar { mask-image: url('../img/oscars.svg'); -webkit-mask-image: url('../img/oscars.svg'); }
+span.oscar { 
+    mask-image: url('../img/oscars.svg'); 
+    -webkit-mask-image: url('../img/oscars.svg'); 
+    margin-right: -5px;
+}
 span.globe { mask-image: url('../img/globe.svg'); -webkit-mask-image: url('../img/globe.svg'); }
