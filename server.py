@@ -1,12 +1,11 @@
 import math
-import pprint
 
+from itertools import chain
 from flask import Flask, request, jsonify
 from flask import render_template
 
 from db.data import Award, getAwards
-
-pp = pprint.PrettyPrinter(indent=4)
+from edge import edge
 
 app = Flask(__name__)
 
@@ -25,6 +24,13 @@ def error(payload):
     return jsonify(response)
 
 class Match():
+
+    def __str__(self):
+        return str(self.exists) + \
+    str(self.depth) + ': ' + \
+    self.titleA + ' vs ' + \
+    self.titleB + ' (' + \
+    str(self.win) + ')'
 
     def __init__(self, titleA, titleB, depth=0):
         self.exists = True
@@ -76,13 +82,40 @@ def makeBracket(inputs):
         if (match is None and sibling is not None):
             jump = Match(sibling.titleA, sibling.titleB, sibling.depth+1)
             jump.exists = False
+            jump.parent = sibling
             bracket[i/2] = jump
 
     return bracket;
 
-def inOrder(bracket):
-    root = bracket[1]
-    return bracket;
+def layout(bracket):
+
+    def rec(i, bracket, output):
+        if i >= len(bracket):
+            return None
+
+        node = bracket[i]
+
+        if node is None or node.depth == 0:
+            return None
+
+        # left child
+        rec(i*2+1, bracket, output)
+
+        if node.exists:
+            output.append(node)
+        else:
+            jumpWidth = 0 
+            jumpNode = node.parent
+            while not jumpNode.exists:
+                jumpWidth += 1
+                jumpNode = jumpNode.parent
+
+        # right child
+        rec(i*2, bracket, output)
+
+    inOrderBracket = []
+    rec(1, bracket, inOrderBracket)
+    return inOrderBracket
 
 # READ
 @app.route("/results/", methods=['GET', 'POST', 'DELETE'])
@@ -98,18 +131,26 @@ def getResults():
     inputs = []
 
     for i in range(0, len(thisRound), 2):
-        inputs.append(Match(thisRound[i], thisRound[i+1]))
+        match = Match(thisRound[i], thisRound[i+1])
+        inputs.append(match)
 
     bracket = makeBracket(inputs)
+    final = bracket[1]
+    victor = final.winner()
 
-    prettyBracket = inOrder(bracket)
-    
-    pp.pprint(prettyBracket)
-    #pp.pprint(list(map(lambda m: str(m.depth) + ': ' + m.titleA + ' vs ' + m.titleB if m is not None and m.exists else '', bracket)))
-     
+    bracket = layout(bracket)
+
+    edges = edge.get(len(inputs))
+    i = 0
+    for m in chain(inputs, bracket):
+        if m is final:
+            continue;
+        m.edge = edges[i]
+        i += 1
+
     return success({
         "input": render_template('results.html', matches=inputs),
-        "results": render_template('results.html', matches=prettyBracket) 
+        "results": render_template('results.html', matches=bracket) 
     });
 
 # UPDATE

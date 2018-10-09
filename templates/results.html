@@ -13,7 +13,7 @@
 {% endmacro %}
 
 {% macro match(movieA, awardsA, movieB, awardsB, win, depth, edge) %}
-    <div class="match d{{ depth }} {{ edge }}">
+    <div class="match d{{ depth }} {% for e in edge %}{{ e }}{% endfor %}">
         {{ movie(movieA, awardsA, win) }}
         <hr />
         {{ movie(movieB, awardsB, (win == False)) }}
@@ -21,6 +21,6 @@
 {% endmacro %}
 
 {% for m in matches %}
-    {{ match(m.titleA, m.awardsA, m.titleB, m.awardsB, m.win, m.depth, "") }}
+    {{ match(m.titleA, m.awardsA, m.titleB, m.awardsB, m.win, m.depth, m.edge) }}
 {% endfor%}
 

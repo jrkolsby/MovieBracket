@@ -9,7 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 cwd = os.path.dirname(os.path.realpath(__file__)) 
 
-engine = create_engine('sqlite:///' + cwd + '/awards.db', echo=True)
+engine = create_engine('sqlite:///' + cwd + '/awards.db', echo=False)
 session = sessionmaker(bind=engine)()
 metaData = MetaData()
 
