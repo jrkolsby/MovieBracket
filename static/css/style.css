@@ -29,6 +29,23 @@ main {
     height: 100%;
 }
 
+button {
+    background: #FF5E5E;
+    border: none;
+    padding: 16px 24px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+    margin-bottom: 16px;
+
+    transition: 0.2s background ease-in-out;
+}
+
+button:hover {
+    background: #ff8080;
+}
+
 .wrapper.wide {
     max-width: 588px;
     padding: 0 8px;

@@ -123,6 +123,7 @@ def layout(bracket):
 @app.route("/results/", methods=['GET', 'POST', 'DELETE'])
 def getResults():
     thisRound = request.form.getlist('round[]')
+    print thisRound
 
     if thisRound == []:
         return error("No round")

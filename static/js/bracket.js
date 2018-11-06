@@ -17,10 +17,10 @@ let getData = (round, success, error) => {
 }
 
 $(document).ready(() => {
-    $("input").keydown((e) => {
+    $(".col.left input").keydown((e) => {
         if (e.keyCode == 13) {
 
-            let round = $("input").toArray().map(i => i.value);
+            let round = $(".col.left input").toArray().map(i => i.value);
 
             getData(round, insertBracket, alert)
         }
